@@ -118,41 +118,41 @@ class MainActivity : AppCompatActivity() {
 //                biding.calcullatorTextView.text = number
 //            }
 //        }
-        biding.btnEqual.setOnClickListener {
-            var test = number.split("+","-","x","/")
-            var result = 0
-            if (number.contains('x')) {
-                for ( i in 0 until test.size ) {
-                    if (i < 1) {
-                        result = test[0].toInt()
-                    } else {
-                        result = result * test[i].toInt()
-                    }
-                }
-            } else if (number.contains('/')) {
-                for ( i in 0 until test.size ) {
-                    if (i<1) {
-                        result = test[0].toInt()
-                    } else {
-                        result = result / test[i].toInt()
-                    }
-                }
-            } else if (number.contains('-')) {
-                for ( i in 0 until test.size ) {
-                    if (i<1) {
-                        result = test[0].toInt()
-                    } else {
-                        result = result - test[i].toInt()
-                    }
-                }
-            } else if (number.contains('+')) {
-                for ( i in 0 until test.size ) {
-                    result = result + test[i].toInt()
-                }
-            }
-
-            biding.resultTextView.text = result.toString()
-        }
+//        biding.btnEqual.setOnClickListener {
+//            var test = number.split("+","-","x","/")
+//            var result = 0
+//            if (number.contains('x')) {
+//                for ( i in 0 until test.size ) {
+//                    if (i < 1) {
+//                        result = test[0].toInt()
+//                    } else {
+//                        result = result * test[i].toInt()
+//                    }
+//                }
+//            } else if (number.contains('/')) {
+//                for ( i in 0 until test.size ) {
+//                    if (i<1) {
+//                        result = test[0].toInt()
+//                    } else {
+//                        result = result / test[i].toInt()
+//                    }
+//                }
+//            } else if (number.contains('-')) {
+//                for ( i in 0 until test.size ) {
+//                    if (i<1) {
+//                        result = test[0].toInt()
+//                    } else {
+//                        result = result - test[i].toInt()
+//                    }
+//                }
+//            } else if (number.contains('+')) {
+//                for ( i in 0 until test.size ) {
+//                    result = result + test[i].toInt()
+//                }
+//            }
+//
+//            biding.resultTextView.text = result.toString()
+//        }
 
 
 
@@ -170,7 +170,95 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun equalAction(view: View) {
+        biding.resultTextView.text = calculaResult()
+    }
 
+    private fun calculaResult(): String {
+        val digitOperators = digitOperations()
+        if (digitOperators.isEmpty()) return ""
+
+        val timeDivision = timeDivisionCalculate(digitOperators)
+        if (digitOperators.isEmpty()) return ""
+
+        val result = addSubtractCalculate(timeDivision)
+        return result.toString()
+    }
+
+    private fun addSubtractCalculate(passedList: MutableList<Any>): Float {
+        var result = passedList[0] as Float
+        for (i in passedList.indices) {
+            if (passedList[i] is Char && i != passedList.lastIndex) {
+                val operator = passedList[i]
+                val nextDigit = passedList[i + 1] as Float
+                if (operator == '+') {
+                    result += nextDigit
+                }else if (operator == '-') {
+                    result -= nextDigit
+                }
+            }
+        }
+
+        return result
+    }
+
+    private fun timeDivisionCalculate(passedList: MutableList<Any>): MutableList<Any> {
+        var list = passedList
+        while (list.contains('x') || list.contains('/')) {
+            list = calcTimeDiv(list)
+        }
+        return list
+    }
+
+    private fun calcTimeDiv(passedList: MutableList<Any>): MutableList<Any> {
+        val newList = mutableListOf<Any>()
+
+        var restartIndex = passedList.size
+
+        for (i in passedList.indices) {
+            if (passedList[i] is Char && i != passedList.lastIndex && i < restartIndex) {
+                val operator = passedList[i]
+                val preDigit = passedList[i - 1] as Float
+                val nextDigit = passedList[i + 1] as Float
+                when(operator) {
+                    'x' -> {
+                        newList.add(preDigit * nextDigit)
+                        restartIndex = i + 1
+                    }
+                    '/' -> {
+                        newList.add(preDigit / nextDigit)
+                        restartIndex = i + 1
+                    }
+                    else -> {
+                        newList.add(preDigit)
+                        newList.add(operator)
+                    }
+                }
+            }
+            if (i > restartIndex) {
+                newList.add(passedList[i])
+            }
+        }
+
+        return newList
+    }
+
+    private fun digitOperations(): MutableList<Any> {
+        val list = mutableListOf<Any>()
+        var currentDigit = ""
+
+        for (character in biding.calcullatorTextView.text) {
+            if (character.isDigit() || character == '.') {
+                currentDigit += character
+            }else {
+                list.add(currentDigit.toFloat())
+                currentDigit = ""
+                list.add(character)
+            }
+        }
+        if (currentDigit != "") {
+            list.add(currentDigit.toFloat())
+        }
+        return list
     }
 
     fun delAction(view: View) {
