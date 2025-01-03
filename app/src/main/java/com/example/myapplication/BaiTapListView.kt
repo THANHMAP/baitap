@@ -21,15 +21,15 @@ class BaiTapListView : AppCompatActivity() {
         binding = ActivityBaiTapListViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val listItem1 = arrayOf("Hello","hi","Xin chao","Ni Hao","Bonjour")
+        val listItem1 = arrayOf("Hello", "hi", "Xin chao", "Ni Hao", "Bonjour")
 
         //binding.listView1.adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,listItem1)
         val listItem2 = arrayOf("")
 
         binding.btn1.setOnClickListener {
             val mergeArray = listItem2.plus(listItem1)
-            binding.listView1.adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,mergeArray)
+            binding.listView1.adapter =
+                ArrayAdapter(this, android.R.layout.simple_list_item_1, mergeArray)
         }
     }
-
 }
